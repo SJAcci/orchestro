@@ -1,0 +1,84 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+
+/**************************************************/
+/* ================================= reset */
+*{ 
+    padding: 0; margin: 0; box-sizing: border-box; 
+    font-family: 'Noto Sans KR', sans-serif; font-weight: 500; color: #333; word-break: keep-all; font-size: 16px;
+}
+::before, ::after{ font-size: inherit; color: inherit; font-weight: inherit; box-sizing: border-box;}
+li{ list-style: none; }
+a{ display: inline-block; text-decoration: none; cursor: pointer; }
+span{ display: inline-block; }
+strong, b{ font-weight: bold; }
+strong{ font-size: inherit; line-height: inherit; color: inherit; }
+img{ display: inline-block; border: none; object-fit: contain; }
+button{ cursor: pointer; border: none; background: transparent; }
+textarea{ resize: none; }
+table{ width: 100%; border-spacing: 0; border-collapse: collapse; table-layout: fixed; }
+tr > *{ vertical-align: middle; word-break: keep-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+details{list-style: none;}
+details::-webkit-details-marker { display: none }
+summary{ cursor: pointer;}
+
+progress { -webkit-appearance: none; }
+progress::-webkit-progress-bar { background-color: #D9D9D9; border-radius: 10px; }
+progress::-webkit-progress-value { background-color: #2879FE; border-radius: 10px; }
+
+/**************************************************/
+/* ================================= base set */
+html, body{ width: 100%; background-color: #F3F3F3; overflow-x: hidden; }
+html.active, body.active{ overflow-y: hidden; }
+
+.maxWidth{ width: 100%; max-width: 1390px; margin: 0 auto; }
+.maxWidth2{ width: 100%; max-width: 1254px; margin: 0 auto;}
+
+/* text-overflow */
+.row01{ 
+    display: inline-block; width: 100%;
+    overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; box-sizing: border-box;
+}
+
+
+/**************************************************/
+/* ================================= common */
+/* === header === */
+
+/* === main === */
+body{ visibility: collapse; opacity: 0; transition: visibility 0.25s ease-in, opacity 0.25s ease-in; }
+body.loaded{ visibility: visible; opacity:1; }
+
+
+/**************************************************/
+/* ================================= responsive */
+@media screen and (min-width: 1025px){
+    .mobile{ display: none !important;}
+    .pc{ display: inline-block;}
+}
+@media screen and (max-width: 1680px){
+    html, body{ zoom: 0.95;}
+  
+}
+@media screen and (max-width: 1390px){
+    html, body{ zoom: 0.9;}
+}
+@media screen and (max-width: 1024px){
+    html, body{ zoom: 1;}
+    .pc{ display: none !important;}
+    .mobile{ display: inline-block;}
+}
+@media screen and (max-width: 560px){
+    html, body{ zoom: 0.95;}
+}
+@media screen and (max-width: 414px){
+    html, body{ zoom: 0.9;}
+
+}
+@media screen and (max-width: 360px){
+    html, body{ zoom: 0.85;}
+}
+@media screen and (max-width: 320px){
+    html, body{ zoom: 0.8;}
+}

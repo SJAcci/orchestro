@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" type="image/x-icon" href="/public/img/favicon.ico">
+    <title>오케스트로</title>
+    <!-- css -->
+    <link rel="stylesheet" href="/public/css/text.css">
+
+    <!-- js -->
+    <script src="/public/js/jquery-3.6.1.min.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+        function textInput(obj){
+            if($(obj).val() == ''){
+                $('.btn_reset').addClass('inactive')
+            }else{
+                $('.btn_reset').removeClass('inactive')
+            }
+        }
+
+        function resetAPI(){
+            $('.bx_upload').val('')
+            $('.btn_reset, .bx_result').addClass('inactive')
+        }
+
+        function startAPI(){
+            //reset
+            $('.btn_submit').blur();
+            $('.btn_reset').removeClass('inactive');
+            $('.bx_result').empty();
+
+            //base set
+            if($('.bx_upload').val() == '' || $('.bx_upload').val() == undefined){
+                $('.bx_upload').val('지금까지 이런 맛은 없었다. 이것은 갈비인가 통닭인가.')
+            }
+
+            //set API
+            var data = new FormData(document.getElementById('form'));
+            fetch('http://34.64.121.203:5002/nlp/sentiment', {
+                method: 'post',
+                cache: 'no-cache',
+                body: data
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                for(var i in data){
+                    // console.log(data[i]);
+                    for(var j in data[i]){
+                        console.log(data[i][j])
+                        $('.bx_result').append(
+                            '<div class="wrap_progress">'+
+                                '<div class="bx_progress"><span data-progress="'
+                                + Number(data[i][j][1] * 100)
+                                +'"></span></div>'
+                                + data[i][j][0] + ' '
+                                + Number(data[i][j][1] * 100) + '%'
+                            +'</div>'
+                        )
+                    }
+                }
+
+                $('.bx_result').removeClass('inactive')
+                setTimeout(()=>{
+                    $('.bx_result .bx_progress span').each(function(){
+                    $(this).animate({
+                        width: $(this).attr('data-progress') + '%',
+                    }, 1000)
+                }), 1500})
+            });
+
+
+        }
+    </script>
+</head>
+<body id="page_text_emotion" class="page_text">
+    <header>
+        <div class="bn">
+            <div class="maxWidth">
+                Emotion Analysis (Demo)<br>
+                <p>
+                    텍스트에 내포되어 있는 감정 및 태도를 파악하는 분석 기술
+                </p>
+            </div>
+        </div>
+        <ul class="gnb maxWidth"></ul>
+    </header>
+
+    <main class="maxWidth2 wrap_content">
+        <form action="" class="wrap_left" id="form" enctype="multipart/form-data">
+            <button type="button" class="btn_reset inactive" onclick="resetAPI()"></button>
+
+            <textarea name="text" id="" cols="30" rows="10" oninput="textInput(this)" class="bx bx_upload" placeholder="내용을 입력해주세요&#13;&#10;(ex. 지금까지 이런 맛은 없었다. 이것은 갈비인가 통닭인가)"></textarea>
+            <div class="wrap_btn">
+                <button type="button" class="btn_submit" onclick="startAPI()">Submit</button>
+            </div>
+
+            <div class="bx bx_result inactive"></div>
+
+        </form>
+        <div class="wrap_right">
+            <div class="bx">
+                <h3>주요 기능</h3>
+                <div class="list_detail">
+                    <p title="고품질 번역">
+                        <span>
+                            고품질의 자연어 처리 기술을 사용하여 텍스트에 표현된 감정을 분석해 중요 감정 표현을 추출할 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="사용 용이">
+                        <span>
+                            단일 API 호출을 통해 앱에 Emotions Analysis 기능을 추가할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+                <h3>활용 용역</h3>
+                <div class="list_detail">
+                    <p title="인사이트">
+                        <span>
+                            리뷰, 뉴스, 소셜 미디어 등 다양한 채널에서 표현된 고객의 감정을 분석해 다양한 인사이트를 얻을 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="데이터 관리">
+                        <span>
+                            다양한 채널에서 표현된 고객의 브랜드에 대한 평가 및 감정을 처리 및 분석이 편리한 텍스트 데이터로 변환해 기록 및 데이터 관리가 용이해질 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+        <p class="t_source">
+            위 모델은 <a href="https://github.com/searle-j/KOTE" target="_blank">KOTE(Korean Online That-gul Emotions)</a>의 한국어-영어 번역(병렬) 말뭉치를 이용하여 학습하였습니다.
+        </p>
+    </main>
+
+    <footer></footer>
+</body>
+</html>

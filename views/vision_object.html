@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" type="image/x-icon" href="/public/img/favicon.ico">
+    <title>오케스트로</title>
+    <!-- css -->
+    <link rel="stylesheet" href="/public/css/vision.css">
+
+    <!-- js -->
+    <script src="/public/js/jquery-3.6.1.min.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+        var url;
+        function inputData(input){
+            console.log(input.files)
+            if(input.files && input.files[0]) {
+                $('.bx_upload span').text('').removeClass()
+                
+                let maxSize = 5 * 1024 * 1024; //5MB
+                let fileSize = input.files[0].size;
+
+                if(fileSize < maxSize){
+                    $('.btn_reset').addClass('inactive')
+                    $('.btn_submit').removeClass('inactive').focus();
+
+                    const reader = new FileReader();
+
+                    reader.onload = e => {
+                        // console.log(e.target.result);
+                        url = e.target.result
+                        $('.bx_upload span').text('파일명 : ' + input.files[0].name).addClass('row01 t_blue')
+                    }
+                    reader.readAsDataURL(input.files[0])
+                }else{
+                    $('.bx_upload span').text('최대 2MB 이내 파일만 가능합니다').addClass('row01 t_red')
+                    $(input).val('')
+                }
+            }
+      
+        }
+
+        function resetAPI(){
+            $('#images').val('')
+            $('.bx_upload span').text('').removeClass()
+            $('.bx_result, .btn_reset').addClass('inactive')
+            $('.btn_submit').removeClass('inactive')
+        }
+
+        function startAPI(){
+            //reset
+            $('.btn_submit').blur();
+
+            var data = new FormData(document.getElementById('form'));
+            
+            if($('#images').val() != ''  && $('#images').val() != undefined){
+                //reset
+                $('.btn_submit').addClass('inactive')
+                $('.btn_reset').removeClass('inactive')
+                $('.bx_result ul').empty();
+
+                //set API
+                fetch('http://34.64.74.13:5000/vision/detect', {
+                    method: 'post',
+                    cache: 'no-cache',
+                    body: data
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    // console.log(data);
+                    // console.log(data.response[0]);
+                    console.log(data.response[0].detections);
+
+                    for(var i in data.response[0].detections){
+                        var point1X = Number(data.response[0].detections[i][0][0].position.x * 100)
+                        var point1Y = Number(data.response[0].detections[i][0][0].position.y * 100)
+                        var point2X = Number(data.response[0].detections[i][1][0].position.x * 100)
+                        var point2Y = Number(data.response[0].detections[i][1][0].position.y * 100)
+
+                        var bxWidth = Number(point2X - point1X);
+                        var bxHeight = Number(point2Y - point1Y);
+
+                        // console.log(point1X, point1Y)
+                        // console.log(point2X, point2Y)
+                        $('.bx_result ul').append(
+                            '<li onmouseenter="listEnter(this)" onmouseout="listOut(this)" title="'
+                            + data.response[0].detections[i].detection_name + ' ' 
+                            + Math.round(data.response[0].detections[i].detection_score) + '%' +'" style="width: '
+                            + bxWidth +'%; height: '
+                            + bxHeight +'%; top: '
+                            + point1Y + '%; left: ' + point1X + '%;'
+                            +'">' +
+                            '</li>'
+
+                        )
+                    }
+
+
+
+                    $('.bx_result img').attr('src',url)
+                    $('.bx_result span').html('Detected : '+ data.response[0].detections.length)
+
+                    $('.bx_result').removeClass('inactive')
+
+                });
+            }else{
+                alert('파일을 업로드해주세요')
+            }
+        }
+    
+        function listEnter(obj){
+            $(obj).siblings().addClass('inactive')
+        }
+        function listOut(obj){
+            $(obj).siblings().removeClass('inactive')
+        }
+    </script>
+</head>
+<body id="page_vision_object" class="page_vision">
+    <header>
+        <div class="bn">
+            <div class="maxWidth">
+                Object Detection (Demo)<br>
+                <p>
+                    이미지 내의 객체(사람, 동물, 사물 등)를 탐지하고 분류하는 기술
+                </p>
+            </div>
+        </div>
+        <ul class="gnb maxWidth"></ul>
+    </header>
+
+    <main class="maxWidth2 wrap_content">
+        <form class="wrap_left" id="form" enctype="multipart/form-data">
+            <label class="bx bx_upload">
+                <input type="file" name="images" id="images" accept="image/*" oninput="inputData(this)" hidden>
+                사용 가능한 파일 확장자 (JPG,PNG 등)
+                <span class="row01"></span>
+            </label>
+            <div class="wrap_btn">
+                <button type="button" class="btn_submit" onclick="startAPI()">Submit</button>
+                <button type="button" class="btn_reset inactive" onclick="resetAPI()">Reset</button>
+            </div>
+
+            <div class="bx bx_result inactive">
+                <span></span>
+                <img src="" alt="">
+                <ul></ul>
+            </div>
+        </form>
+        <div class="wrap_right">
+            <div class="bx">
+                <h3>주요 기능</h3>
+                <div class="list_detail">
+                    <p title="고급 인식">
+                        <span>
+                            이미지 내의 수십 개의 객체 (사람이나 차량 등)를 식별 및 분류해 식별된 객체의 이름, 바운딩 박스 등을 확인할 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="사용 용이">
+                        <span>
+                            이미지 내의 수십 개의 객체 (사람이나 차량 등)를 식별 및 분류해 식별된 객체의 이름, 바운딩 박스 등을 확인할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+                <h3>활용 용역</h3>
+                <div class="list_detail">
+                    <p title="인사이트">
+                        <span>
+                            사람 혹은 상품의 밀집도 파악 및 회사 내 안전 관리 등 이미지를 통해 다양한 인사이트를 얻을 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="데이터 관리">
+                        <span>
+                            이미지를 자동으로 분석 및 분류해 처리가 용이한 데이터셋으로 관리할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <p class="t_source">위 모델은 <a href="http://cocodataset.org" target="_blank">COCO 데이터셋</a>을 이용하여 학습하였습니다.</p>
+    </main>
+
+    <footer></footer>
+</body>
+</html>

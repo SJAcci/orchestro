@@ -1,0 +1,89 @@
+@charset "UTF-8";
+@import url('./sub.css');
+/**************************************************/
+/* === 2. page_vision === */
+.page_vision header .bn .maxWidth:before{
+    background-image: url('../img/ico_vision.svg'); content: '시각지능';
+}
+
+/* page_vision_object */
+#page_vision_object .bx_result{ position: relative;}
+#page_vision_object .bx_result span{ 
+    position: absolute; top: 0; right: 0; z-index: 1;
+    padding: 8px 10px; background: rgba(26, 26, 26, 0.62);; border-radius: 0 5px 0 0;  
+    color: #fff; font-size: 18px; letter-spacing: -0.025em; 
+}
+#page_vision_object .bx_result img{ height: 100%; object-fit: contain;}
+
+#page_vision_object .bx_result li{ position: absolute; z-index: 5; border-radius: 2px; transition: 0.15s ease-in; cursor: default; }
+#page_vision_object .bx_result li:hover{ z-index: 10;}
+
+#page_vision_object .bx_result li:nth-child(8n-1){ border: 4px solid #41CCEB;}
+#page_vision_object .bx_result li:nth-child(8n-2){ border: 4px solid #357DF3;}
+#page_vision_object .bx_result li:nth-child(8n-3){ border: 4px solid #FF9548;}
+#page_vision_object .bx_result li:nth-child(8n-4){ border: 4px solid #32C06E;}
+#page_vision_object .bx_result li:nth-child(8n-5){ border: 4px solid #FFA71C;}
+#page_vision_object .bx_result li:nth-child(8n-6){ border: 4px solid #ED3623;}
+#page_vision_object .bx_result li:nth-child(8n-7){ border: 4px solid #A832D9;}
+#page_vision_object .bx_result li:nth-child(8n){ border: 4px solid #1C48E5;}
+
+#page_vision_object .bx_result li.inactive{ opacity: 0; visibility: collapse; }
+
+#page_vision_object .bx_result li:before{ 
+    position: absolute; z-index: 2; top: -36px; right: -4px; 
+    padding: 8px; border-radius: 5px 5px 0 0; 
+    color: #fff; font-size: 12px; white-space: nowrap; content: attr(title); 
+    transform-origin: bottom right;
+}
+#page_vision_object .bx_result li:hover::before{ transform: scale(1.2); }
+#page_vision_object .bx_result li:nth-child(8n-1):before{ background: #41CCEB;}
+#page_vision_object .bx_result li:nth-child(8n-2):before{ background: #357DF3;}
+#page_vision_object .bx_result li:nth-child(8n-3):before{ background: #FF9548;}
+#page_vision_object .bx_result li:nth-child(8n-4):before{ background: #32C06E;}
+#page_vision_object .bx_result li:nth-child(8n-5):before{ background: #FFA71C;}
+#page_vision_object .bx_result li:nth-child(8n-6):before{ background: #ED3623;}
+#page_vision_object .bx_result li:nth-child(8n-7):before{ background: #A832D9;}
+#page_vision_object .bx_result li:nth-child(8n):before{ background: #1C48E5;}
+
+/* page_vision_pose */
+#page_vision_pose .bx_result{ display: flex; align-items: center; justify-content: center; }
+
+/* page_vision_celebrity */
+#page_vision_celebrity .bx_result{ position: relative;}
+#page_vision_celebrity .bx_result tr > *{ background: #fff; border: 1px solid #464646; text-align: center; letter-spacing: -0.025em; }
+#page_vision_celebrity .bx_result th{background: #4F91FF; color: #FFFF; }
+
+/**************************************************/
+/* ================================= responsive */
+@media screen and (min-width: 1025px){
+     /* === 2. page_vision === */
+    /* page_vision_object */
+    #page_vision_object .bx_result{ height: 438px; }
+
+    /* page_vision_pose */
+    #page_vision_pose .bx_result{ height: 506px; }
+    #page_vision_pose .bx_result img{  max-width: 392px; }
+
+    /* page_vision_ocr */
+    #page_vision_ocr .bx_result{ height: 478px; padding: 24px 38px; }
+
+    /* page_vision_celebrity */
+    #page_vision_celebrity .bx_result{ display: flex; align-items: center; height: 366px; padding: 0 56px; }
+    #page_vision_celebrity .bx_result img{ width: calc(100% - 220px);}
+    #page_vision_celebrity .bx_result table{width: 210px; margin-left: 10px;}
+    #page_vision_celebrity .bx_result tr > *{ height: 52px;}
+}
+@media screen and (max-width: 1680px){
+
+}
+@media screen and (max-width: 1024px){
+    /* === 2. page_vision === */
+    /* page_vision_pose */
+    #page_vision_pose .bx_result{ min-height: 368px; }
+
+    /* page_vision_celebrity */
+    #page_vision_celebrity .bx_result{ padding: 50px 0;}
+    #page_vision_celebrity .bx_result img{ height: 358px;}
+    #page_vision_celebrity .bx_result table{ width: 204px; margin: 20px auto 0; }
+    #page_vision_celebrity .bx_result tr > *{ height: 52px;}
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" type="image/x-icon" href="/public/img/favicon.ico">
+    <title>오케스트로</title>
+    <!-- css -->
+    <link rel="stylesheet" href="/public/css/text.css">
+
+    <!-- js -->
+    <script src="/public/js/jquery-3.6.1.min.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+        function textInput(obj){
+            if($(obj).val() == ''){
+                $('.btn_reset').addClass('inactive')
+            }else{
+                $('.btn_reset').removeClass('inactive')
+            }
+        }
+
+        function resetAPI(){
+            $('.bx_upload').val('')
+            $('.btn_reset, .bx_result').addClass('inactive')
+        }
+
+        function startAPI(){
+            //reset
+            $('.btn_submit').blur();
+            $('.btn_reset').removeClass('inactive');
+            $('.bx_result').empty();
+
+            //base set
+            if($('.bx_upload').val() == '' || $('.bx_upload').val() == undefined){
+                $('.bx_upload').val('1993년 5월생인 아이유는 대한민국 가수이자 배우이다.')
+            }
+
+            //set API
+            var data = new FormData(document.getElementById('form'));
+             
+            fetch('http://34.64.121.203:5000/nlp/ner', {
+                method: 'post',
+                cache: 'no-cache',
+                body: data
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                console.log(data[0].output);
+                console.log(data[0].output);
+                
+                var color = ''
+                for(var i in data[0].output){
+                    if(data[0].output[i].tag == '인명'){
+                        color = '#D7E6FF'
+                    }else if(data[0].output[i].tag == '기관명'){
+                        color = '#DDFFEB'
+                    }else if(data[0].output[i].tag == '날짜'){
+                        color = '#FFE7E7'
+                    }else if(data[0].output[i].tag == '지명'){
+                        color = '#FFE8C5'
+                    }else if(data[0].output[i].tag == '직업'){
+                        color = '#D8D4FF'
+                    }else if(data[0].output[i].tag == '기타 수량표현'){
+                        color = '#FFA298'
+                    }
+
+                    var str = data[0].output[i].token
+                    if(data[0].output[i].tag != '없음'){
+                        str = '<p style="background:'+color+';">' + data[0].output[i].token.replace(/#/g, '') + '<span>' + data[0].output[i].tag + '</span></p>' 
+             
+                    }else{
+                        str =  str.replace(/#/g, '') + ' '
+                    }
+                   
+                    $('.bx_result').append(str)
+                }
+                $('.bx_result').removeClass('inactive')
+
+            });
+        }
+    </script>
+</head>
+<body id="page_text_ner" class="page_text">
+    <header>
+        <div class="bn">
+            <div class="maxWidth">
+                Named Entity Recognition (Demo)<br>
+                <p>
+                    텍스트로부터 개체명(사람, 회사, 장소, 시간, 단위 등)에 해당하는 단어를 인식해 추출 및 분류하는 기술
+                </p>
+            </div>
+        </div>
+        <ul class="gnb maxWidth"></ul>
+    </header>
+
+    <main class="maxWidth2 wrap_content">
+        <form class="wrap_left" id="form" enctype="multipart/form-data">
+            <button type="button" class="btn_reset inactive" onclick="resetAPI()"></button>
+
+            <textarea name="text" id="" cols="30" rows="10" oninput="textInput(this)" class="bx bx_upload" placeholder="내용을 입력해주세요&#13;&#10;(ex.1993년 5월생인 아이유는 대한민국 가수이자 배우이다)"></textarea>
+            <div class="wrap_btn">
+                <button type="button" class="btn_submit" onclick="startAPI()">Submit</button>
+            </div>
+    
+            <div class="bx bx_result inactive"></div>
+        </form>
+        <div class="wrap_right">
+            <div class="bx">
+                <h3>주요 기능</h3>
+                <div class="list_detail">
+                    <p title="고급 인식">
+                        <span>
+                            텍스트 내에서 이름을 가진 개체명 (사람, 회사, 장소, 시간 등)을 인식해 추출 및 분류하며 추출된 개체명을 확인할 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="사용 용이">
+                        <span>
+                            단일 API 호출을 통해 앱에 NER 기능을 추가할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+                <h3>활용 용역</h3>
+                <div class="list_detail">
+                    <p title="인사이트">
+                    <span>       
+                        텍스트 내의 주요 정보를 빠르게 인식 및 추출함으로써 텍스트에 대해 높은 이해도를 가진 분석을 통해 다양한 인사이트를 얻을 수 있습니다.
+                    </span>
+                    </p>
+                    <hr>
+                    <p title="정보 검색">
+                        <span>
+                            텍스트 내에서 인명, 지명, 기관명 등의 개체명을 추출 및 분류해 단어의 카테고리에 따라 관련 데이터를 보다 정교하게 분석하여 검색할 수 있습니다.
+                        </span>  
+                    </p>
+                </div>
+            </div>
+        </div>
+        <p class="t_source">위 모델은 <a href="https://github.com/kmounlp/NER" target="_blank">한국해양대학교 자연언어처리 연구실</a>에서 공개한 데이터를 이용하여 학습하였습니댜.</p>
+    </main>
+
+    <footer></footer>
+</body>
+</html>

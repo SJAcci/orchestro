@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" type="image/x-icon" href="/public/img/favicon.ico">
+    <title>오케스트로</title>
+    <!-- css -->
+    <link rel="stylesheet" href="/public/css/text.css">
+
+    <!-- js -->
+    <script src="/public/js/jquery-3.6.1.min.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+          function radioChg(obj){
+            var langChk = $(obj).attr('data-value')
+            var text;
+            if(langChk == '/koen'){
+                text = '내용을 입력해주세요\\n(ex. 인생에서 최고의 행복은 우리가 사랑받고 있다는 확신이다)';
+
+            }else if(langChk == '/enko'){
+                text = '내용을 입력해주세요\\n(ex. The purpose of our lives is to be happy)'
+            }
+            var placeholderSplit = text.split('\\n')
+            text = placeholderSplit.join('\n')
+            $('.bx_upload').attr('placeholder', text)
+            $('input[name="translate_lang"]').attr('value', langChk)
+            
+            resetAPI()
+          }
+
+          function textInput(obj){
+            if($(obj).val() == ''){
+                $('.btn_reset').addClass('inactive')
+            }else{
+                $('.btn_reset').removeClass('inactive')
+            }
+          }
+
+          function resetAPI(){
+            $('.bx_upload').val('')
+            $('.btn_reset, .bx_result').addClass('inactive')
+          }
+
+          function startAPI(){
+            //reset
+            $('.btn_submit').blur();
+            $('.btn_reset').removeClass('inactive');
+            $('.bx_result').empty();
+
+            //base set
+            if($('.bx_upload').val() == '' || $('.bx_upload').val() == undefined){
+                if($('input[name="translate_lang"]').val() == '/koen'){
+                    $('.bx_upload').val('인생에서 최고의 행복은 우리가 사랑받고 있다는 확신이다.')
+                }else if($('input[name="translate_lang"]').val() == '/enko'){
+                    $('.bx_upload').val('The purpose of our lives is to be happy.')
+                }
+            }
+
+            //set API
+            var formData = new FormData($('#form')[0]);
+            $.ajax({
+                url : "http://34.64.121.203:5001/nlp/translation",
+                method : "post",
+                data : formData,
+                enctype : "multipart/form-data",
+                processData : false,
+                contentType : false,
+                dataType : "json",
+                success : function(res) {
+                    console.log(res);
+                    $('.bx_result').html(res.translated_sentence[0]).removeClass('inactive')
+                },
+                error:function(request, status, error){
+                    console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                }
+            });
+
+          }
+    </script>
+</head>
+<body id="page_text_translator" class="page_text">
+    <header>
+        <div class="bn">
+            <div class="maxWidth">
+                Translator (Demo)<br>
+                <p>
+                    실시간으로 텍스트 번역을 제공하는 인공지능 기술(한영 또는 영한)
+                </p>
+            </div>
+        </div>
+        <ul class="gnb maxWidth"></ul>
+    </header>
+
+    <main class="maxWidth2 wrap_content">
+        <form action="" class="wrap_left" id="form" enctype="form-data">
+            <div class="bx_btn">
+                <label><input type="radio" name="lang" data-value="/koen" onclick="radioChg(this)" checked hidden><p>한영변환</p></label>
+                <label><input type="radio" name="lang" data-value="/enko" onclick="radioChg(this)" hidden><p>영한변환</p></label>
+                <input type="hidden" name="translate_lang" value="/koen">
+            </div>
+
+            <button type="button" class="btn_reset inactive" onclick="resetAPI()"></button>
+  
+            <textarea name="text" id="" cols="30" rows="10" oninput="textInput(this)" class="bx bx_upload" placeholder="내용을 입력해주세요&#13;&#10;(ex. 인생에서 최고의 행복은 우리가 사랑받고 있다는 확신이다)"></textarea>
+            <div class="wrap_btn">
+                <button type="button" class="btn_submit" onclick="startAPI()">Submit</button>
+            </div>
+
+            <div class="bx bx_result inactive"></div>
+        </form>
+        <div class="wrap_right">
+            <div class="bx">
+                <h3>주요 기능</h3>
+                <div class="list_detail">
+                    <p title="고품질 번역">
+                        <span>
+                            실시간으로 입력된 텍스트를 인식하여 정확하고 자연스러운 언어로 번역할 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="사용 용이">
+                        <span>
+                            단일 API 호출을 통해 앱에 Translator 기능을 추가할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+                <h3>활용 용역</h3>
+                <div class="list_detail">
+                    <p title="글로벌 커뮤니케이션">
+                        <span>
+                            고품질의 실시간 번역 기능을 사용해 전 세계 고객들과 효율적이고 유연한 커뮤니케이션을 할 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="데이터 기반 의사결정">
+                        <span>
+                            소셜 미디어, 고객 리뷰, 뉴스 등 원본 데이터를 번역해 제공함으로써 글로벌 데이터를 통해 데이터 기반 의사결정을 할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <p class="t_source">위 모델은 <a href="https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&dataSetSn=126" target="_blank">AI Hub</a>의 한국어-영어 번역(병렬) 말뭉치를 이용하여 학습하였습니다.</p>
+    </main>
+
+    <footer></footer>
+</body>
+</html>

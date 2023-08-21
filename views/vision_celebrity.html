@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" type="image/x-icon" href="/public/img/favicon.ico">
+    <title>오케스트로</title>
+    <!-- css -->
+    <link rel="stylesheet" href="/public/css/vision.css">
+
+    <!-- js -->
+    <script src="/public/js/jquery-3.6.1.min.js"></script>
+    <script src="/public/js/common.js"></script>
+    <script>
+        var url;
+        function inputData(input){
+            if(input.files && input.files[0]) {
+                $('.bx_upload span').text('').removeClass()
+                
+                let maxSize = 2 * 1024 * 1024; //2MB
+                let fileSize = input.files[0].size;
+
+                if(fileSize < maxSize){
+                    $('.btn_reset').addClass('inactive')
+                    $('.btn_submit').removeClass('inactive').focus();
+                    
+                    const reader = new FileReader();
+
+                    reader.onload = e => {
+                        url = e.target.result
+                        $('.bx_upload span').text('파일명 : ' + input.files[0].name).addClass('row01 t_blue')
+                    }
+                    reader.readAsDataURL(input.files[0])
+                }else{
+                    $('.bx_upload span').text('최대 2MB 이내 파일만 가능합니다').addClass('row01 t_red')
+                    $(input).val('')
+                }
+            }
+      
+        }
+
+        function resetAPI(){
+            $('#images').val('')
+            $('.bx_upload span').text('').removeClass()
+            $('.bx_result, .btn_reset').addClass('inactive')
+            $('.btn_submit').removeClass('inactive')
+        }
+
+        function startAPI(){
+            // reset
+            $('.btn_submit').blur();
+
+            var demoData = [
+                {detection_name : '공유', detection_score : 77},
+                {detection_name : '강동원', detection_score : 67},
+                {detection_name : '정우성', detection_score : 52},
+                
+            ]
+
+            if($('#images').val() != ''  && $('#images').val() != undefined){
+                //reset
+                $('.btn_submit').addClass('inactive')
+                $('.btn_reset').removeClass('inactive')
+                $('.bx_result table').empty();
+                $('.bx_result table').append('<tr><th>연예인</th><th>확률(%)</th></tr>' )
+
+                //set API HERE
+                for(var i in demoData){
+                    $('.bx_result table').append(
+                        '<tr><td>'+demoData[i].detection_name+'</td><td>'+demoData[i].detection_score+'</td></tr>' 
+                    )
+                }
+
+                $('.bx_result img').attr('src',url)
+                $('.bx_result').removeClass('inactive')
+            }
+        }
+    </script>
+</head>
+<body id="page_vision_celebrity" class="page_vision">
+    <header>
+        <div class="bn">
+            <div class="maxWidth">
+                Celebrity Look Alike (Demo)<br>
+                <p>
+                    얼굴 인식 및 분석을 통해 제공된 얼굴 이미지와 닮은 유명인을 찾는 인공지능 기술
+                </p>
+            </div>
+        </div>
+        <ul class="gnb maxWidth"></ul>
+    </header>
+
+    <main class="maxWidth2 wrap_content">
+        <form action="" class="wrap_left" id="form">
+            <label class="bx bx_upload"><input type="file" name="" accept="image/*" id="images" oninput="inputData(this)" hidden>
+                사용 가능한 파일 확장자 (JPG,PNG 등)
+                <span class="row01"></span>
+            </label>
+            <div class="wrap_btn">
+                <button type="button" class="btn_submit" onclick="startAPI()">Submit</button>
+                <button type="button" class="btn_reset inactive" onclick="resetAPI()">Reset</button>
+            </div>
+            
+            <div class="bx bx_result inactive">
+                <img src="" alt="">
+                <table></table>
+            </div>  
+        </form>
+        <div class="wrap_right">
+            <div class="bx">
+                <h3>주요 기능</h3>
+                <div class="list_detail">
+                    <p title="고급 얼굴 인식">
+                        <span>
+                            얼굴 인식 기능을 사용해 이미지 내의 얼굴을 인식하고 가장 유사한 얼굴의 유명인을 추천할 수 있습니다.
+                        </span>
+                    </p>
+                    <hr>
+                    <p title="고급 얼굴 인식">
+                        <span>
+                            단일 API 호출을 통해 앱에 Celebrity Look Alike 기능을 추가할 수 있습니다.
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <p class="t_source">위 모델은 <u>데이터셋</u>를 이용하여 학습하였습니다.</p>
+    </main>
+
+    <footer></footer>
+</body>
+</html>
